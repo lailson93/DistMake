@@ -9,8 +9,8 @@ hello.o: hello.c
 main.o: main.c hello.h
 	gcc -o main.o -c main.c -W -Wall -ansi -pedantic
 #comentario
-clean:
-	rm -rf *.o
+# clean:
+# 	rm -rf *.o
 
-mrproper: clean
-	rm -rf hello
+# mrproper: clean
+# 	rm -rf hello

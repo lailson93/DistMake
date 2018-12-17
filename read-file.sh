@@ -9,9 +9,11 @@ object Hello {
     def main(args: Array[String]) {
         var lastKey = ""
         
-        var testeMap = scala.collection.mutable.Map[String, String]()
-        var rules = new ListBuffer[Map[String,String]]()
-        var dependencies1 = new ListBuffer[Map[String,List[String]]]()
+        var rules = scala.collection.mutable.Map[String, String]()
+        var dependencies1 = scala.collection.mutable.Map[String, List[String]]()
+        //var tuplarules = new ListBuffer[String,List[String]]()
+        //var rules = new ListBuffer[Map[String,String]]()
+       // var dependencies1 = new ListBuffer[Map[String,List[String]]]()
         for (line <- Source.fromFile("Makefile").getLines()) {
             val line1  = line.stripMargin.replaceAll("\t","")
             // if ( line1.isEmpty()) || () ) {
@@ -27,13 +29,18 @@ object Hello {
                      lastKey = newRule
                     if (teste.size == 2){
                         var dependencies = teste(1).split(' ').map(x=>x.trim).toList
-                        //tuplarules += List(teste(0),dependencies)
                         var listRUle = List(teste(0),dependencies)
+                        dependencies1 += (teste(0) -> dependencies)
+                        
                         var dependencia=  List(listRUle(0)->listRUle(1)).toMap
+                        //dependencies1 += listRUle(0).toString -> listRUle(1).toString
+                        
+                        
+                        
                         //dependencies1 += dependencia
                         //println(listRUle)
-                        //println(dependencies)
-                        //println(dependencia)
+                        println(dependencia)
+                        //println(dependencies1)
 
                     }
                     //println(teste)
@@ -43,7 +50,7 @@ object Hello {
                         val listCommand = List(lastKey,line1)
                         //var listCommandRule = List(listCommand(0) ->listCommand(1)).toMap
                         //testeMap += (listCommand(0) ->listCommand(1))
-                        testeMap += (lastKey -> line1)
+                        rules += (lastKey -> line1)
                         //rules+=listCommandRule
                        // val command = line1
                         
@@ -53,8 +60,10 @@ object Hello {
                 }
             }
         } 
-        //println(dependencies1)
-        println(testeMap)  
+        println("dependencias: \n")
+        println(dependencies1)
+        println("Rules: \n")
+        println(rules)  
 
 
 

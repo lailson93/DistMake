@@ -8,13 +8,12 @@ import scala.io.Source
 object Parser {
     var rules = scala.collection.mutable.Map[String, String]()
     var dependencies1 = scala.collection.mutable.Map[String, List[String]]()
+    var stack_dependencies = scala.collection.mutable.Stack[String]()
+    var stack_dependencies1 = scala.collection.mutable.Stack[String]()
 
     def parser(): Unit = {
-            var lastKey = ""
+        var lastKey = ""
         
-        //var rules = scala.collection.mutable.Map[String, String]()
-       // var dependencies1 = scala.collection.mutable.Map[String, List[String]]()
-
         for (line <- Source.fromFile("Makefile").getLines()) {
             val line1  = line.stripMargin.replaceAll("\t","")
     
@@ -29,13 +28,17 @@ object Parser {
                     if (teste.size == 2){
                         var dependencies = teste(1).split(' ').map(x=>x.trim).toList
                         var listRUle = List(teste(0),dependencies)
-                        dependencies1 += (teste(0) -> dependencies)
-                        
-                        var dependencia=  List(listRUle(0)->listRUle(1)).toMap
-
-                        //println(dependencia)
+                    
+                        dependencies1 = dependencies1+ (teste(0) -> dependencies)
+                        //println(dependencies1)
 
                     }
+                    else if (teste.size == 1){
+                        dependencies1 = dependencies1+ (teste(0) -> List("empty"))
+                    }
+
+
+
 
                 } else {
                     if (line1 != lastKey){
@@ -54,15 +57,42 @@ object Parser {
         println(rules)  
     }
     def debuger(): Unit = {
-        rules.keys.foreach( (target) =>
-            //println ("target: ", target) 
-            if (dependencies1.contains(target)){
-                println("dependencie: ", dependencies1(target))
-            } else {
-                println ("no dependencies")
-            }
-            //println ("commands: ", rules(target))
+        var root = ""
+
+
+        dependencies1.keys.foreach( (target) =>
+            if (target ==  "all"){
+                stack_dependencies.push(dependencies1(target)(0))
+                root = stack_dependencies.pop()
+                engine()
+            } 
         )
+        def engine(){
+            if (dependencies1.contains(root)){
+                for (x <- 0 to (dependencies1(root).size)-1 ){
+                    stack_dependencies1.push(dependencies1(root)(x))
+                    stack_dependencies.push(dependencies1(root)(x))
+                    println(dependencies1(root)(x))
+                }
+                root = stack_dependencies.pop()
+                engine()
+            } else {
+                println("no contents")
+                stack_dependencies.pop()
+                engine()
+            }
+        }
+
+   
+        //rules.keys.foreach( (target) =>
+            //println ("target: ", target) 
+            //if (dependencies1.contains(target)){
+                //println("dependencie: ", dependencies1(target))
+            //} else {
+            //    println ("no dependencies")
+            //}
+            //println ("commands: ", rules(target))
+        // )
         
         
         //for ( (target,command) <- rules) {
